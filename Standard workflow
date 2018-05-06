@@ -184,7 +184,7 @@ source activate qiime1
 export TMPDIR=~/qiime_tmp
 
 echo "upgma"
-time upgma_cluster.py -i weighted_unifrac_otu_table_mc_taxa.txt -o weighted_upgma.tre
+time upgma_cluster.py -i unweighted_unifrac_otu_table_mc_taxa.txt -o unweighted_upgma.tre
 
 source deactivate
 
