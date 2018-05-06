@@ -1,0 +1,168 @@
+Validate map-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "validate mapping"
+time validate_mapping_file.py -m map.tsv -o validatemap
+
+source deactivate
+
+
+Join paired reads-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "join paired ends"
+time join_paired_ends.py -m SeqPrep -b Index.fastq.gz -f Read1.fastq.gz -r Read2.fastq.gz -o seqprep_joined -j 80 -p 80
+
+source deactivate
+
+
+Demultiplex-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "splitting libraries"
+time split_libraries_fastq.py --barcode_type 12 -i
+seqprep_assembled.fastq.gz -b seqprep_assembled.fastq_barcodes.fastq -o slout -m map.tsv -q 19
+
+echo "Counting sequences"
+time count_seqs.py -i slout/seqs.fna
+
+source deactivate
+
+
+OTU picking-
+
+#!/bin/bash
+#SBATCH -t 2:00:00
+#SBATCH -n 24
+#SBATCH -p normal
+
+module load eb
+module load Miniconda2
+
+source deactivate
+
+echo "loading virtualenv"
+source activate qiime1
+
+#set temporary directory
+export TMPDIR=~/qiime_tmp
+
+echo "Picking OTUs with open reference"
+time pick_open_reference_otus.py -i slout/seqs.fna -o otus -a -O 24 -r ~/silva/97_otus_16S.fasta --suppress_taxonomy_assignment
+
+source deactivate
+
+
+Assign taxonomy-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "assign taxonomy"
+time assign_taxonomy.py -i otus/rep_set.fna -t ~/silva/97_majority_taxonomy_7_levels.txt -r ~/silva/97_otus_16S.fasta --similarity 0.97
+
+source deactivate
+
+
+Make OTU table-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "make otu table"
+time make_otu_table.py -i final_otu_map_mc2.txt -o otu_table_mc_taxa.biom -t ~/2018_02_smb/SeqPrep_joined/assigntaxa/rep_set_tax_assignments.txt -m ~/2018_02_smb/SeqPrep_joined/map.tsv -e pynast_aligned_seqs/rep_set_failures.fasta
+
+source deactivate
+
+
+Read OTU table-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+echo "loading virtualenv"
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "otu table read"
+time biom summarize-table -i otu_table_mc_taxa.biom -o oturead
+
+source deactivate
+
+
+Diversity analysis
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+module load eb
+module load Miniconda2
+
+echo "loading virtualenv"
+source activate qiime1
+
+export TMPDIR=~/qiime_tmp
+
+echo "diversity analysis"
+time core_diversity_analyses.py -i otus/otu_table_mc_taxa.biom -o diversity -m map.tsv -e 739 -a -O 24 -t otus/rep_set.tre
+
+source deactivate
