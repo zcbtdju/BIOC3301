@@ -18,7 +18,7 @@ OTU picking - run independently for each dataset, closed reference UCLUST cluste
 OTU tables merged - OTU table is read to obtain sampling depth (-e) for diversity analysis.
 Diversity analysis - for alpha and beta diversity metrics.
 UPGMA phylogenetic tree.
-Statistical tests - ANOSIM (-c = UPGMA clustering, to test significance clades), (-c = rainfall, to test significance of presence/absence of rain), (-c = rainfallmm, to test significance of the amount of rain), BIO-ENV (-c = UPGMA clustering and rainfallmm)
+Statistical tests - ANOSIM (-c = UPGMA clustering, to test significance clades), (-c = rainfall, to test significance of presence/absence of rain), (-c = rainfallmm, to test significance of the amount of rain), BIO-ENV (-c = UPGMA clustering and rainfallmm).
 
 GreenGenes workflow:
 Mapping file validation.
