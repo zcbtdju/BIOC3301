@@ -160,7 +160,7 @@ time make_phylogeny.py -i align/rep_set_aligned.fasta -o rep_set.tre
 source deactivate
 
 
-OTU table-
+Make OTU table-
 
 #!/bin/bash
 #SBATCH -t 1:00:00
