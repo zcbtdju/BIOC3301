@@ -1,4 +1,4 @@
-Validate map-
+Validate mapping file-
 
 #!/bin/bash
 #SBATCH -t 1:00:00
@@ -82,6 +82,104 @@ export TMPDIR=~/qiime_tmp
 
 echo "Picking OTUs with open reference"
 time pick_open_reference_otus.py -i slout/seqs.fna -o otus -a -O 24
+
+source deactivate
+
+
+Sequence alignment-
+
+#!/bin/bash
+#SBATCH -t 2:00:00
+#SBATCH -n 24
+#SBATCH -p normal
+
+#load modules
+module load eb
+module load Miniconda2
+
+#load virtualenv
+echo "loading virtualenv"
+source activate qiime1
+
+#set temporary directory
+export TMPDIR=~/qiime_tmp
+
+#align sequence
+echo "align sequence"
+time parallel_align_seqs_pynast.py -i rep_set.fna -o align -O 24
+
+source deactivate
+
+
+Taxonomy assignment-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+#load modules
+module load eb
+module load Miniconda2
+
+#load virtualenv
+source activate qiime1
+
+#set temporary directory
+export TMPDIR=~/qiime_tmp
+
+#assigning taxonomy to otus
+echo "assign taxonomy"
+time assign_taxonomy.py -i ~/2018_02_smb/SeqPrep_joined/otusgg/rep_set.fna -o assigntaxa
+
+source deactivate
+
+
+Phylogenetic tree-
+
+#!/bin/bash
+#SBATCH -t 3:00:00
+#SBATCH -n 24
+#SBATCH -p normal
+
+#load modules
+module load eb
+module load Miniconda2
+
+#load virtualenv
+echo "loading virtualenv"
+source activate qiime1
+
+#set temporary directory
+export TMPDIR=~/qiime_tmp
+
+#phylogenetic tree
+echo "make phylogenetic tree"
+time make_phylogeny.py -i align/rep_set_aligned.fasta -o rep_set.tre
+
+source deactivate
+
+
+OTU table-
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+#load modules
+module load eb
+module load Miniconda2
+
+#load virtualenv
+source activate qiime1
+
+#set temporary directory
+export TMPDIR=~/qiime_tmp
+
+#making otu table with taxonomy
+echo "make otu table"
+time make_otu_table.py -i final_otu_map_mc2.txt -o otu_table_mc_taxa.biom -t ~/2018_02_smb/SeqPrep_joined/otusgg/assigntaxa/rep_set_tax_assignments.txt -m ~/2018_02_smb/SeqPrep_joined/map.tsv -e align/rep_set_failures.fasta
 
 source deactivate
 
