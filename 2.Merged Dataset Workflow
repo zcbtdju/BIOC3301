@@ -254,3 +254,28 @@ echo "compare categories"
 time compare_categories.py --method anosim -i ~/merge/diversity/bdiv_even623/unweighted_unifrac_dm.txt -m ~/merge/map.tsv -c rainfallmm -o anosim_1.3_unweighted -n 999
 
 source deactivate
+
+
+BIO-ENV
+
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH -n 24
+#SBATCH -p short
+
+#load modules
+module load eb
+module load Miniconda2
+
+#load virtualenv
+echo "loading virtualenv"
+Source activate qiime1
+
+#set temporary directory
+export TMPDIR=~/qiime_tmp
+
+#compare categories
+echo "compare categories"
+time compare_categories.py --method bioenv -i ~/merge/diversity/bdiv_even623/unweighted_unifrac_dm.txt -m ~/stats/merge_map_modified.tsv -c UPGMA-u,Rainfallmm -o bio_env_2.1 -n 999
+
+source deactivate
