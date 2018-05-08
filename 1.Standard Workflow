@@ -1,4 +1,4 @@
-Validate map-
+Validate mapping file-
 
 #!/bin/bash
 #SBATCH -t 1:00:00
