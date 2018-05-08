@@ -1,4 +1,4 @@
-Validate map-
+Validate mapping file-
 
 #!/bin/bash
 #SBATCH -t 1:00:00
@@ -38,7 +38,7 @@ time join_paired_ends.py -m SeqPrep -b Index.fastq.gz -f Read1.fastq.gz -r Read2
 source deactivate
 
 
-Demultiplex (joined)-
+Demultiplex (for joined reads, 17/18 only)-
 
 #!/bin/bash
 #SBATCH -t 1:00:00
@@ -62,7 +62,7 @@ time count_seqs.py -i slout/seqs.fna
 source deactivate
 
 
-Demultiplex (single)-
+Demultiplex (for single reads, 15/16 and 16/17)-
 
 #!/bin/bash
 #SBATCH -t 1:00:00
